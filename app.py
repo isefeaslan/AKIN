@@ -6,7 +6,7 @@ import pydeck as pdk
 import streamlit as st
 
 st.set_page_config(
-    page_title="AKIN — Anomali, Konum, İzleme ve Niyet",
+    page_title="AKIN (Anomali, Konum, İzleme ve Niyet)",
     page_icon="🚨",
     layout="wide",
 )
@@ -1248,6 +1248,27 @@ IL_KOORDINATLARI = {
     "Düzce": (40.84, 31.15),
 }
 
+IL_SINIR_YARICAPI = {
+    "İstanbul": 0.16,
+    "Yalova": 0.07,
+    "Kocaeli": 0.11,
+    "İzmir": 0.18,
+    "Ankara": 0.24,
+    "Konya": 0.28,
+    "Antalya": 0.22,
+    "Mersin": 0.18,
+    "Adana": 0.19,
+    "Şanlıurfa": 0.22,
+    "Gaziantep": 0.14,
+    "Diyarbakır": 0.20,
+    "Hatay": 0.13,
+    "Van": 0.22,
+    "Samsun": 0.17,
+    "Trabzon": 0.11,
+    "Bursa": 0.18,
+    "Kayseri": 0.20,
+}
+
 nufus_agirliklari = {
     "İstanbul": 0.185,
     "Ankara": 0.080,
@@ -1280,16 +1301,47 @@ nufus_agirliklari = {
     "Erzurum": 0.009,
     "Ordu": 0.009,
 }
+
+buyuk_suc_agirliklari = {
+    "İstanbul": 1.45,
+    "Ankara": 1.25,
+    "İzmir": 1.22,
+    "Adana": 1.32,
+    "Gaziantep": 1.28,
+    "Şanlıurfa": 1.26,
+    "Diyarbakır": 1.30,
+    "Hatay": 1.34,
+    "Mersin": 1.27,
+    "Antalya": 1.18,
+    "Bursa": 1.15,
+    "Kocaeli": 1.20,
+    "Van": 1.24,
+    "Mardin": 1.23,
+    "Şırnak": 1.22,
+    "Hakkâri": 1.21,
+    "Trabzon": 1.12,
+    "Samsun": 1.13,
+    "Kayseri": 1.10,
+    "Konya": 1.11,
+}
+
 tum_iller = list(TURKIYE_IL_ILCELER.keys())
-agirliklar = np.array(
-    [nufus_agirliklari.get(il, 0.003) for il in tum_iller], dtype=np.float32
+
+birlesik_ham_agirlik = np.array(
+    [
+        nufus_agirliklari.get(il, 0.003)
+        * (0.65 + 0.35 * buyuk_suc_agirliklari.get(il, 1.0))
+        for il in tum_iller
+    ],
+    dtype=np.float32,
 )
-agirliklar /= agirliklar.sum()
+agirliklar = birlesik_ham_agirlik / birlesik_ham_agirlik.sum()
 
 
-@st.cache_data(show_spinner="Veriler hazırlanıyor...")
-def veriyi_yukle(n: int = 150000):
-  secilen_iller = np.random.choice(tum_iller, size=n, p=agirliklar)
+@st.cache_data(show_spinner="1.000.000 profil ve suç/risk verisi hazırlanıyor...")
+def veriyi_yukle(n: int = 1000000):
+  rng = np.random.default_rng()
+  secilen_iller = rng.choice(tum_iller, size=n, p=agirliklar)
 
   ad_havuzu = np.array([
       "Ahmet",
@@ -1319,7 +1371,69 @@ def veriyi_yukle(n: int = 150000):
       "Volkan",
       "Gökhan",
       "Sibel",
-      "Tarik",
+      "Tarık",
+      "İbrahim",
+      "Hüseyin",
+      "Hasan",
+      "Ömer",
+      "Osman",
+      "Yasin",
+      "Tuğba",
+      "Derya",
+      "Ebru",
+      "Hatice",
+      "Emine",
+      "Yasemin",
+      "Gizem",
+      "Melisa",
+      "İrem",
+      "Selin",
+      "Baran",
+      "Arda",
+      "Eren",
+      "Mert",
+      "Umut",
+      "Berk",
+      "Furkan",
+      "Alperen",
+      "Doğukan",
+      "Ege",
+      "Kadir",
+      "Ramazan",
+      "İsmail",
+      "Halil",
+      "Salih",
+      "Bekir",
+      "Zeliha",
+      "Özlem",
+      "Pınar",
+      "Gülşen",
+      "Nihan",
+      "Cansu",
+      "Aylin",
+      "Dilek",
+      "Seda",
+      "Aslı",
+      "Burcu",
+      "Kübra",
+      "Şeyma",
+      "Reyhan",
+      "Dilan",
+      "Azra",
+      "Berfin",
+      "Miray",
+      "Eylül",
+      "Defne",
+      "Rüzgar",
+      "Yaman",
+      "Çınar",
+      "Toprak",
+      "Kağan",
+      "Bora",
+      "Tuna",
+      "Çağrı",
+      "Enes",
+      "Yiğit",
   ])
   soyad_havuzu = np.array([
       "Yılmaz",
@@ -1344,13 +1458,57 @@ def veriyi_yukle(n: int = 150000):
       "Polat",
       "Aksoy",
       "Şen",
+      "Korkmaz",
+      "Erdoğan",
+      "Güneş",
+      "Aktaş",
+      "Yavuz",
+      "Avcı",
+      "Karahan",
+      "Taş",
+      "Bulut",
+      "Keskin",
+      "Tekin",
+      "Bozkurt",
+      "Kaplan",
+      "Sarı",
+      "Güler",
+      "Tunç",
+      "Ünal",
+      "Karaca",
+      "Turan",
+      "Duman",
+      "Uçar",
+      "Çakır",
+      "Sönmez",
+      "Acar",
+      "Bilgin",
+      "Mutlu",
+      "Bayram",
+      "Coşkun",
+      "İnce",
+      "Karakuş",
+      "Kalkan",
+      "Soylu",
+      "Ergün",
+      "Alkan",
+      "Ceylan",
+      "Eroğlu",
+      "Gündüz",
+      "Kayaalp",
+      "Özer",
+      "Sezer",
+      "Vural",
+      "Yalçın",
+      "Zengin",
+      "Aydoğan",
+      "Bilir",
+      "Çağlar",
+      "Demirel",
+      "Ekici",
   ])
 
-  ad_soyadlar = (
-      np.random.choice(ad_havuzu, size=n)
-      + " "
-      + np.random.choice(soyad_havuzu, size=n)
-  )
+  ad_soyadlar = rng.choice(ad_havuzu, size=n) + " " + rng.choice(soyad_havuzu, size=n)
 
   base_lats = np.array(
       [IL_KOORDINATLARI[il][0] for il in secilen_iller], dtype=np.float32
@@ -1358,107 +1516,122 @@ def veriyi_yukle(n: int = 150000):
   base_lons = np.array(
       [IL_KOORDINATLARI[il][1] for il in secilen_iller], dtype=np.float32
   )
+  il_yaricap = np.array(
+      [IL_SINIR_YARICAPI.get(il, 0.14) for il in secilen_iller],
+      dtype=np.float32,
+  )
 
   lats = np.clip(
-      base_lats + np.random.uniform(-0.35, 0.35, size=n).astype(np.float32),
+      base_lats + rng.uniform(-1.0, 1.0, size=n).astype(np.float32) * il_yaricap,
       35.85,
       42.10,
   )
   lons = np.clip(
-      base_lons + np.random.uniform(-0.35, 0.35, size=n).astype(np.float32),
+      base_lons + rng.uniform(-1.0, 1.0, size=n).astype(np.float32) * il_yaricap,
       25.65,
       44.80,
   )
 
   ilceler = np.array(
-      [np.random.choice(TURKIYE_IL_ILCELER[il]) for il in secilen_iller]
+      [rng.choice(TURKIYE_IL_ILCELER[il]) for il in secilen_iller]
   )
-  mahalleler = ilceler + " Mah. " + np.random.randint(1, 40, size=n).astype(str)
+  mahalle_no = rng.integers(1, 40, size=n).astype(str)
+  mahalleler = np.char.add(np.char.add(ilceler, " Mah. "), mahalle_no)
 
   gecmis_ikametler = np.where(
-      np.random.rand(n) > 0.5,
-      secilen_iller + " bölgesinde uzun süredir ikamet ediyor.",
+      rng.random(n) > 0.5,
+      np.char.add(secilen_iller, " bölgesinde uzun süredir ikamet ediyor."),
       "Çoklu İl Değişikliği (Aktif Hareketlilik)",
   )
 
-  df = pd.DataFrame({
-      "TC_No": np.random.randint(
-          10000000000, 99999999999, size=n, dtype=np.int64
-      ),
-      "Ad_Soyad": ad_soyadlar,
-      "Vatandaslik_Durumu": pd.Categorical(
-          np.random.choice(
-              ["T.C. Vatandaşı", "Yabancı Uyruklu"], size=n, p=[0.93, 0.07]
-          )
-      ),
-      "Ikamet_Ili": pd.Categorical(secilen_iller),
-      "Ikamet_Ilcesi": pd.Categorical(ilceler),
-      "Ikamet_Mahalle": mahalleler,
-      "Gecmis_Ikamet_Gecmisi": gecmis_ikametler,
-      "lat": lats,
-      "lon": lons,
-      "Tor_I2P_Kullanimi": pd.Categorical(
-          np.random.choice(
-              ["Yok", "Var (Şifreli Ağ)"], size=n, p=[0.95, 0.05]
-          )
-      ),
-      "DarkWeb_Aramasi_Patlayici": pd.Categorical(
-          np.random.choice(
-              ["Yok", "Tespit Edildi!"], size=n, p=[0.985, 0.015]
-          )
-      ),
-      "Kritik_Tesis_Kesfi": pd.Categorical(
-          np.random.choice(
-              ["Yok", "Var (Askeri/Valilik Etrafı Dolaşım)"],
-              size=n,
-              p=[0.96, 0.04],
-          )
-      ),
-      "Sahte_Ikiz_Plaka": pd.Categorical(
-          np.random.choice(
-              ["Normal", "Aynı Anda Farklı İlde İkiz Plaka!"],
-              size=n,
-              p=[0.99, 0.01],
-          )
-      ),
-      "Adli_Sicil_Kaydi": pd.Categorical(
-          np.random.choice(
-              ["Temiz", "Organize Suç", "Terör İltisakı", "Kaçakçılık"],
-              size=n,
-              p=[0.90, 0.04, 0.03, 0.03],
-          )
-      ),
-  })
+  il_buyuk_suc_katsayi = np.array(
+      [buyuk_suc_agirliklari.get(il, 1.0) for il in secilen_iller],
+      dtype=np.float32,
+  )
+  darkweb_olasilik = np.clip(0.015 * il_buyuk_suc_katsayi, 0.008, 0.05)
+  ikiz_plaka_olasilik = np.clip(0.010 * il_buyuk_suc_katsayi, 0.005, 0.04)
+
+  darkweb_secim = np.where(
+      rng.random(n) < darkweb_olasilik, "Tespit Edildi!", "Yok"
+  )
+  ikiz_plaka_secim = np.where(
+      rng.random(n) < ikiz_plaka_olasilik,
+      "Aynı Anda Farklı İlde İkiz Plaka!",
+      "Normal",
+  )
+  tor_secim = rng.choice(["Yok", "Var (Şifreli Ağ)"], size=n, p=[0.95, 0.05])
+  tesis_secim = rng.choice(
+      ["Yok", "Var (Askeri/Valilik Etrafı Dolaşım)"], size=n, p=[0.96, 0.04]
+  )
+  sicil_secim = rng.choice(
+      ["Temiz", "Organize Suç", "Terör İltisakı", "Kaçakçılık"],
+      size=n,
+      p=[0.90, 0.04, 0.03, 0.03],
+  )
 
   il_risk_katmani = np.array(
-      [nufus_agirliklari.get(il, 0.003) * 12.0 for il in secilen_iller],
+      [
+          nufus_agirliklari.get(il, 0.003)
+          * 12.0
+          * buyuk_suc_agirliklari.get(il, 1.0)
+          for il in secilen_iller
+      ],
       dtype=np.float32,
   )
 
-  skor = np.ones(n, dtype=np.float32) * 1.5 + np.clip(
-      il_risk_katmani, 0.0, 2.2
+  skor = np.full(n, 1.4, dtype=np.float32) + np.clip(
+      il_risk_katmani, 0.0, 2.4
   )
-  skor += (df["Tor_I2P_Kullanimi"] == "Var (Şifreli Ağ)").astype(
+  skor += np.where(tor_secim == "Var (Şifreli Ağ)", 1.5, 0.0).astype(np.float32)
+  skor += np.where(darkweb_secim == "Tespit Edildi!", 3.5, 0.0).astype(
       np.float32
-  ) * 1.5
-  skor += (df["DarkWeb_Aramasi_Patlayici"] == "Tespit Edildi!").astype(
-      np.float32
-  ) * 3.5
-  skor += (
-      df["Kritik_Tesis_Kesfi"] == "Var (Askeri/Valilik Etrafı Dolaşım)"
-  ).astype(np.float32) * 2.5
-  skor += (df["Sahte_Ikiz_Plaka"] == "Aynı Anda Farklı İlde İkiz Plaka!").astype(
-      np.float32
-  ) * 3.0
-  skor += (
-      df["Adli_Sicil_Kaydi"].isin(["Organize Suç", "Terör İltisakı"]).astype(
-          np.float32
-      )
-      * 2.0
+  )
+  skor += np.where(
+      tesis_secim == "Var (Askeri/Valilik Etrafı Dolaşım)", 2.5, 0.0
+  ).astype(np.float32)
+  skor += np.where(
+      ikiz_plaka_secim == "Aynı Anda Farklı İlde İkiz Plaka!", 3.0, 0.0
+  ).astype(np.float32)
+  skor += np.where(
+      np.isin(sicil_secim, ["Organize Suç", "Terör İltisakı"]), 2.0, 0.0
+  ).astype(np.float32)
+  skor += np.where(sicil_secim == "Kaçakçılık", 1.4, 0.0).astype(np.float32)
+
+  hesaplanan_skor = np.clip(
+      skor + rng.uniform(-0.3, 0.3, size=n).astype(np.float32), 1.0, 10.0
   )
 
-  df["Hesaplanan_Anomali_Skoru"] = np.clip(
-      skor + np.random.uniform(-0.3, 0.3, size=n).astype(np.float32), 1.0, 10.0
+  p_dark = np.where(
+      darkweb_secim == "Tespit Edildi!", "DarkWeb patlayıcı araması (+3.5) | ", ""
+  )
+  p_plaka = np.where(
+      ikiz_plaka_secim == "Aynı Anda Farklı İlde İkiz Plaka!",
+      "İkiz plaka (+3.0) | ",
+      "",
+  )
+  p_tesis = np.where(
+      tesis_secim == "Var (Askeri/Valilik Etrafı Dolaşım)",
+      "Kritik tesis keşfi (+2.5) | ",
+      "",
+  )
+  p_sicil = np.where(
+      np.isin(sicil_secim, ["Organize Suç", "Terör İltisakı"]),
+      "Yüksek riskli sicil (+2.0) | ",
+      np.where(sicil_secim == "Kaçakçılık", "Kaçakçılık sicili (+1.4) | ", ""),
+  )
+  p_tor = np.where(
+      tor_secim == "Var (Şifreli Ağ)", "Tor/I2P izi (+1.5) | ", ""
+  )
+  p_taban = np.char.add(
+      "İl nüfus + büyük suç katsayısı: ",
+      np.char.add(np.round(il_buyuk_suc_katsayi, 2).astype(str), "x"),
+  )
+
+  gerekce_dizi = np.char.add(
+      np.char.add(
+          np.char.add(np.char.add(p_dark, p_plaka), p_tesis), p_sicil
+      ),
+      np.char.add(p_tor, p_taban),
   )
 
   suc_havuzu = np.array([
@@ -1487,21 +1660,11 @@ def veriyi_yukle(n: int = 150000):
       ),
   ])
 
-  df["Muhtemel_Suc_Turu"] = pd.Categorical(
-      np.random.choice(suc_havuzu, size=n)
-  )
-  df["Eylem_Zamani_Projeksiyonu"] = pd.Categorical(
-      np.random.choice(zaman_havuzu, size=n)
-  )
-  df["Zihinsel_Niyet_Analizi"] = np.random.choice(niyet_havuzu, size=n)
-
   conditions = [
-      df["Hesaplanan_Anomali_Skoru"] >= 8.5,
-      (df["Hesaplanan_Anomali_Skoru"] >= 7.0)
-      & (df["Hesaplanan_Anomali_Skoru"] < 8.5),
-      (df["Hesaplanan_Anomali_Skoru"] >= 5.0)
-      & (df["Hesaplanan_Anomali_Skoru"] < 7.0),
-      df["Hesaplanan_Anomali_Skoru"] < 5.0,
+      hesaplanan_skor >= 8.5,
+      (hesaplanan_skor >= 7.0) & (hesaplanan_skor < 8.5),
+      (hesaplanan_skor >= 5.0) & (hesaplanan_skor < 7.0),
+      hesaplanan_skor < 5.0,
   ]
   choices = [
       "⬛ Siyah (Kritik Tehdit)",
@@ -1509,16 +1672,37 @@ def veriyi_yukle(n: int = 150000):
       "🟠 Turuncu (Orta Risk)",
       "🟡 Sarı (İzleme Düzeyi)",
   ]
-  df["Risk_Seviyesi"] = pd.Categorical(
-      np.select(conditions, choices, default="🟡 Sarı (İzleme Düzeyi)")
-  )
+  risk_seviyesi = np.select(conditions, choices, default="🟡 Sarı (İzleme Düzeyi)")
 
-  return df
+  return pd.DataFrame({
+      "TC_No": rng.integers(10000000000, 99999999999, size=n, dtype=np.int64),
+      "Ad_Soyad": ad_soyadlar,
+      "Vatandaslik_Durumu": pd.Categorical(
+          rng.choice(["T.C. Vatandaşı", "Yabancı Uyruklu"], size=n, p=[0.93, 0.07])
+      ),
+      "Ikamet_Ili": pd.Categorical(secilen_iller),
+      "Ikamet_Ilcesi": pd.Categorical(ilceler),
+      "Ikamet_Mahalle": pd.Categorical(mahalleler),
+      "Gecmis_Ikamet_Gecmisi": pd.Categorical(gecmis_ikametler),
+      "lat": lats,
+      "lon": lons,
+      "Tor_I2P_Kullanimi": pd.Categorical(tor_secim),
+      "DarkWeb_Aramasi_Patlayici": pd.Categorical(darkweb_secim),
+      "Kritik_Tesis_Kesfi": pd.Categorical(tesis_secim),
+      "Sahte_Ikiz_Plaka": pd.Categorical(ikiz_plaka_secim),
+      "Adli_Sicil_Kaydi": pd.Categorical(sicil_secim),
+      "Hesaplanan_Anomali_Skoru": hesaplanan_skor,
+      "Skor_Degerlendirme_Gerekcesi": pd.Categorical(gerekce_dizi),
+      "Muhtemel_Suc_Turu": pd.Categorical(rng.choice(suc_havuzu, size=n)),
+      "Eylem_Zamani_Projeksiyonu": pd.Categorical(rng.choice(zaman_havuzu, size=n)),
+      "Zihinsel_Niyet_Analizi": pd.Categorical(rng.choice(niyet_havuzu, size=n)),
+      "Risk_Seviyesi": pd.Categorical(risk_seviyesi),
+  })
 
 
-df = veriyi_yukle()
+df = veriyi_yukle(1000000)
 
-# --- Kenar Çubuğu: Sistem Kontrol Merkezi ---
+# --- Kenar Çubuğu: AKIN Kontrol Merkezi ---
 st.sidebar.title("🚨 AKIN Kontrol Merkezi")
 with st.sidebar:
   canli_saat_kutusu("flex-start")
@@ -1542,7 +1726,7 @@ if secilen_iller:
       )
   )
 else:
-  musait_ilceler = sorted(df["Ikamet_Ilcesi"].astype(str).unique())
+  musait_ilceler = sorted(df["Ikamet_Ilcesi"].cat.categories.tolist())
 
 secilen_ilceler = st.sidebar.multiselect(
     "2. İlçe Seçimi", options=musait_ilceler, default=[], key="secilen_ilceler_ms"
@@ -1550,18 +1734,20 @@ secilen_ilceler = st.sidebar.multiselect(
 
 if secilen_ilceler:
   musait_mahalleler = sorted(
-      df[df["Ikamet_Ilcesi"].isin(secilen_ilceler)]["Ikamet_Mahalle"]
-      .astype(str)
+      df.loc[df["Ikamet_Ilcesi"].isin(secilen_ilceler), "Ikamet_Mahalle"]
+      .dropna()
       .unique()
+      .tolist()
   )
 elif secilen_iller:
   musait_mahalleler = sorted(
-      df[df["Ikamet_Ili"].isin(secilen_iller)]["Ikamet_Mahalle"]
-      .astype(str)
+      df.loc[df["Ikamet_Ili"].isin(secilen_iller), "Ikamet_Mahalle"]
+      .dropna()
       .unique()
+      .tolist()
   )
 else:
-  musait_mahalleler = sorted(df["Ikamet_Mahalle"].astype(str).unique())
+  musait_mahalleler = sorted(df["Ikamet_Mahalle"].cat.categories.tolist())
 
 secilen_mahalleler = st.sidebar.multiselect(
     "3. Mahalle / Köy Seçimi",
@@ -1596,8 +1782,8 @@ with col_baslik:
   st.markdown(
       f"""
         <div class="akin-banner">
-            <div style="font-size: 1.35rem; font-weight: 700;">🚨 AKIN — Anomali, Konum, İzleme ve Niyet</div>
-            <div style="opacity: 0.82; font-size: 0.88rem; margin-top: 2px;">Operasyonel Risk ve Önleyici Niyet Analitiği Paneli</div>
+            <div style="font-size: 1.32rem; font-weight: 700;">🚨 AKIN (Anomali, Konum, İzleme ve Niyet)</div>
+            <div style="opacity: 0.82; font-size: 0.88rem; margin-top: 2px;">Operasyonel Niyet, Suç Oranı ve Risk Analitiği Platformu • 1.000.000 Sentetik Profil</div>
             <div>
                 <span class="akin-pill">📍 Kapsam: {bolge_etiketi}</span>
                 <span class="akin-pill">🎯 Min. Risk Eşiği: {risk_esigi:.1f}</span>
@@ -1612,12 +1798,11 @@ with col_zaman:
 
 tab1, tab2, tab3 = st.tabs([
     "🗺️ Türkiye Anomali Haritası & Akış",
-    "🎯 Risk Hiyerarşisi & Pre-Crime Tahminleri",
-    "🔍 Bireysel Profil, Suç ve Niyet Raporu",
+    "🎯 Risk Hiyerarşisi & Değerlendirme Kriterleri",
+    "🔍 Bireysel Profil, Puan Gerekçesi ve Niyet",
 ])
 
 with tab1:
-  # 1. Özet Metrik Kartları
   m1, m2, m3, m4 = st.columns(4)
   m1.metric("Toplam İzlenen Profil", f"{len(df):,}")
   m2.metric("Filtrelenen Şüpheli Sayısı", f"{len(süzülmüş_df):,}")
@@ -1634,27 +1819,37 @@ with tab1:
 
   st.markdown("---")
 
-  # 2. Öncelikli Tam Genişlik Harita Bloğu
-  st.subheader("🗺️ Türkiye Sınırları Anomali Yoğunluğu (Öncelikli Harita Görünümü)")
+  st.subheader("🗺️ Türkiye İl Sınırları Anomali & Büyük Suç Yoğunluğu Haritası")
   harita_df = (
       süzülmüş_df.sort_values(
           by="Hesaplanan_Anomali_Skoru", ascending=False
       )
-      .head(2000)
+      .head(3000)
       .copy()
   )
 
+  skor_serisi = harita_df["Hesaplanan_Anomali_Skoru"]
   harita_df["color_r"] = np.where(
-      harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 255
+      skor_serisi >= 8.5, 25, np.where(skor_serisi >= 5.0, 255, 255)
   )
   harita_df["color_g"] = np.where(
-      harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 0
+      skor_serisi >= 8.5, 25, np.where(skor_serisi >= 7.0, 45, 165)
   )
-  harita_df["color_b"] = 30
+  harita_df["color_b"] = np.where(skor_serisi >= 8.5, 35, 20)
+
+  harita_df["nokta_yaricap"] = np.where(
+      skor_serisi >= 8.5,
+      skor_serisi * 260,
+      np.where(
+          skor_serisi >= 7.0,
+          skor_serisi * 220,
+          np.where(skor_serisi >= 5.0, skor_serisi * 190, skor_serisi * 160),
+      ),
+  )
 
   if secilen_iller and secilen_iller[-1] in IL_KOORDINATLARI:
     odak_lat, odak_lon = IL_KOORDINATLARI[secilen_iller[-1]]
-    odak_zoom = 8.2
+    odak_zoom = 8.4
   else:
     odak_lat, odak_lon = 39.0, 35.2
     odak_zoom = 5.6
@@ -1663,12 +1858,12 @@ with tab1:
       "ScatterplotLayer",
       harita_df,
       get_position=["lon", "lat"],
-      get_color=["color_r", "color_g", "color_b", 200],
-      get_radius="Hesaplanan_Anomali_Skoru * 800",
+      get_color=["color_r", "color_g", "color_b", 210],
+      get_radius="nokta_yaricap",
       pickable=True,
-      radius_scale=6,
-      radius_min_pixels=4,
-      radius_max_pixels=20,
+      radius_scale=3,
+      radius_min_pixels=2,
+      radius_max_pixels=10,
   )
 
   view_state = pdk.ViewState(
@@ -1685,8 +1880,9 @@ with tab1:
       initial_view_state=view_state,
       tooltip={
           "html": (
-              "<b>Şüpheli:</b> {Ad_Soyad}<br/><b>Bölge:</b> {Ikamet_Ili} /"
-              " {Ikamet_Ilcesi}<br/><b>Muhtemel Suç:</b>"
+              "<b>Şüpheli:</b> {Ad_Soyad} ({Risk_Seviyesi})<br/><b>Konum:</b>"
+              " {Ikamet_Ili} / {Ikamet_Ilcesi}<br/><b>Skor:</b>"
+              " {Hesaplanan_Anomali_Skoru}<br/><b>Muhtemel Suç:</b>"
               " {Muhtemel_Suc_Turu}<br/><b>Zaman:</b>"
               " {Eylem_Zamani_Projeksiyonu}"
           )
@@ -1696,7 +1892,6 @@ with tab1:
 
   st.markdown("---")
 
-  # 3. Harita Altı Tam Genişlik Satır 1: Anlık Tehdit Akışı Kartları
   st.subheader("🔔 Anlık Tehdit Akışı & TR Zaman Damgası")
   en_riskli = süzülmüş_df.sort_values(
       by="Hesaplanan_Anomali_Skoru", ascending=False
@@ -1705,7 +1900,7 @@ with tab1:
   if en_riskli.empty:
     st.info("Seçili filtre kriterlerine uyan yüksek riskli kayıt bulunamadı.")
   else:
-    for idx, row in en_riskli.iterrows():
+    for _, row in en_riskli.iterrows():
       tespit_saat, tespit_tarih = anlik_tr_zaman()
       rozet_css = risk_rozet_stili(str(row["Risk_Seviyesi"]))
       st.markdown(
@@ -1714,46 +1909,46 @@ with tab1:
                     <span class="risk-badge" style="{rozet_css}">{row['Risk_Seviyesi']} • Skor: {row['Hesaplanan_Anomali_Skoru']:.1f}</span>
                     <div style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">{row['Ad_Soyad']} <span style="opacity: 0.7; font-size: 0.85rem;">(TC: {row['TC_No']} • {row['Ikamet_Ili']} / {row['Ikamet_Ilcesi']})</span></div>
                     <div style="font-size: 0.90rem; margin-bottom: 2px;">🎯 <b>Muhtemel Suç:</b> {row['Muhtemel_Suc_Turu']} &nbsp;|&nbsp; ⏰ <b>Zaman Projeksiyonu:</b> {row['Eylem_Zamani_Projeksiyonu']}</div>
+                    <div style="font-size: 0.85rem; margin-bottom: 2px; opacity: 0.90;">📌 <b>Puan Gerekçesi:</b> {row['Skor_Degerlendirme_Gerekcesi']}</div>
                     <div style="font-size: 0.85rem; opacity: 0.82;">💡 <b>Niyet Özeti:</b> {row['Zihinsel_Niyet_Analizi']} • 🕒 <b>Tespit (TR):</b> {tespit_saat} ({tespit_tarih})</div>
                 </div>
                 """,
           unsafe_allow_html=True,
       )
-      if st.button(
-          f"🚨 Önleyici Müdahale Başlat — {row['Ad_Soyad']}",
-          key=f"btn_sevk_{row['TC_No']}_{idx}",
-      ):
-        komut_saat, _ = anlik_tr_zaman()
-        st.success(
-            f"[{komut_saat} TR] {row['Ad_Soyad']} ({row['Ikamet_Ili']}) için"
-            " önleyici saha operasyonu tetiklendi!"
-        )
 
   st.markdown("---")
 
-  # 4. Harita Altı Tam Genişlik Satır 2: Seçili Kapsam Risk & Suç Özeti
   st.subheader("📊 Seçili Kapsam Risk Seviyesi & Suç Eğilimi Özeti")
   if not süzülmüş_df.empty:
     ozet_c1, ozet_c2 = st.columns(2)
     with ozet_c1:
-      risk_dagilim = (
-          süzülmüş_df["Risk_Seviyesi"]
-          .value_counts()
-          .reset_index()
-      )
+      risk_dagilim = süzülmüş_df["Risk_Seviyesi"].value_counts().reset_index()
       risk_dagilim.columns = ["Risk Sınıfı", "Kişi Sayısı"]
       st.dataframe(risk_dagilim, use_container_width=True, hide_index=True)
     with ozet_c2:
       suc_dagilim = (
-          süzülmüş_df["Muhtemel_Suc_Turu"]
-          .value_counts()
-          .reset_index()
+          süzülmüş_df["Muhtemel_Suc_Turu"].value_counts().reset_index()
       )
       suc_dagilim.columns = ["Öngörülen Suç Türü", "Kayıt Sayısı"]
       st.dataframe(suc_dagilim, use_container_width=True, hide_index=True)
 
 with tab2:
-  st.subheader("🎯 Pre-Crime & Suç Eğilimi Matrisi")
+  st.subheader("🎯 Değerlendirme Kriterleri, Puan Mantığı ve Risk Matrisi")
+  st.markdown(
+      """
+        <div class="akin-card">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 6px;">📐 Puanlama ve Risk Seviyesi Kriterleri (1.0 – 10.0)</div>
+            <div style="font-size: 0.90rem; line-height: 1.55;">
+                • <b>Taban + İl Nüfus & Büyük Suç Katsayısı:</b> Her kayıt temel skor ile başlar; ilin nüfus ağırlığı ve büyük suç yoğunluğu (organize, kaçakçılık, kritik altyapı/güvenlik) dağılım ve temel risk katsayısına eklenir.<br/>
+                • <b>Yüksek Puan Nedenleri:</b> DarkWeb patlayıcı araması (<b>+3.5</b>), aynı anda farklı ilde ikiz/sahte plaka (<b>+3.0</b>), kritik tesis çevresi keşfi (<b>+2.5</b>), organize suç veya terör sicili (<b>+2.0</b>), Tor/I2P kullanımı (<b>+1.5</b>) ve kaçakçılık sicili (<b>+1.4</b>).<br/>
+                • <b>Düşük Puan Nedenleri:</b> Adli sicilin temiz olması, dijital/fiziksel anomali göstergelerinin bulunmaması ve büyük suç katsayısı düşük illerde yer alma durumu skoru taban seviyelere (<b>1.0 – 4.9</b>) çeker.<br/>
+                • <b>Sınıflar:</b> <b>⬛ Siyah</b> (≥ 8.5) • <b>🔴 Kırmızı</b> (7.0 – 8.49) • <b>🟠 Turuncu</b> (5.0 – 6.99) • <b>🟡 Sarı</b> (&lt; 5.0).
+            </div>
+        </div>
+        """,
+      unsafe_allow_html=True,
+  )
+
   sirali_liste = süzülmüş_df.sort_values(
       by="Hesaplanan_Anomali_Skoru", ascending=False
   )
@@ -1767,6 +1962,7 @@ with tab2:
       "Eylem_Zamani_Projeksiyonu",
       "Ikamet_Ili",
       "Ikamet_Ilcesi",
+      "Skor_Degerlendirme_Gerekcesi",
   ]].head(500).copy()
 
   gosterim_df.columns = [
@@ -1778,11 +1974,12 @@ with tab2:
       "Zaman Projeksiyonu",
       "İl",
       "İlçe",
+      "Değerlendirme Gerekçesi",
   ]
   st.dataframe(gosterim_df, use_container_width=True, hide_index=True)
 
 with tab3:
-  st.subheader("🔍 Bireysel Profil - Zihinsel Niyet ve Suç Analiz Raporu")
+  st.subheader("🔍 Bireysel Profil - Puan Gerekçesi, Suç ve Niyet Raporu")
   arama_kriteri = st.text_input(
       "Aramak istediğiniz TC Kimlik No veya İsim Giriniz:",
       placeholder="Örn: Ahmet Yılmaz veya TC No",
@@ -1821,7 +2018,10 @@ with tab3:
       p4.metric("Sorgu Zamanı (TR)", sorgu_saat)
 
       st.markdown("---")
-      st.markdown("##### 🧠 Yapay Zeka Pre-Crime & Niyet Analizi")
+      st.markdown("##### 📊 Puan ve Risk Değerlendirme Gerekçesi")
+      st.write(f"🧾 **Kriter Analizi:** {kisi['Skor_Degerlendirme_Gerekcesi']}")
+
+      st.markdown("##### 🧠 AKIN Pre-Crime & Niyet Analizi")
       st.error(f"🎯 **Öngörülen Muhtemel Suç:** {kisi['Muhtemel_Suc_Turu']}")
       st.warning(
           f"⏰ **Zaman Projeksiyonu:** {kisi['Eylem_Zamani_Projeksiyonu']}"
