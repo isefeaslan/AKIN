@@ -1907,7 +1907,7 @@ süzülmüş_df = df[
 ]
 if secili_il != "Tümü":
   süzülmüş_df = süzülmüş_df[süzülmüş_df["Ikamet_Ili"] == secili_il]
-    top_left, top_right = st.columns([3, 1.2])
+top_left, top_right = st.columns([3, 1.2])
 with top_left:
   st.markdown(
       """
