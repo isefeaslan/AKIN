@@ -131,8 +131,7 @@ def canli_saat_kutusu(hizalama: str = "flex-start"):
         </div>
         """,
       unsafe_allow_html=True,
-  )
-    TURKIYE_IL_ILCELER = {
+  )TURKIYE_IL_ILCELER = {
     "Adana": [
         "Seyhan",
         "Yüreğir",
