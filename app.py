@@ -2011,6 +2011,23 @@ with tab2:
       rozet_css = risk_rozet_stili(str(satir["Risk_Seviyesi"]))
       st.markdown(
           f"""
-                <div class="akin-card">
-                    <span class="risk-badge" style="{rozet_css}">{satir["Risk_Seviyesi"]} • Skor
-        
+    <span class="risk-badge" style="{rozet_css}">{satir["Risk_Seviyesi"]} • Skor: {satir["Hesaplanan_Anomali_Skoru"]:.1f}</span>
+                    <div style="font-size: 1.05rem; font-weight: 700;">
+                        {satir["Ad_Soyad"]} <span style="color: #8b949e; font-weight: 400;">(TC: {satir["TC_No"]})</span>
+                    </div>
+                    <div style="color: #c9d1d9; margin-top: 4px;">
+                        📍 <b>{satir["Ikamet_Ili"]} / {satir["Ikamet_Ilcesi"]}</b> — {satir["Ikamet_Mahalle"]}
+                    </div>
+                    <div style="color: #9ba3b0; font-size: 0.90rem; margin-top: 6px;">
+                        <b>Muhtemel Faaliyet:</b> {satir["Muhtemel_Suc_Turu"]} | <b>Projeksiyon:</b> {satir["Eylem_Zamani_Projeksiyonu"]}
+                    </div>
+                    <div style="color: #8b949e; font-size: 0.86rem; margin-top: 4px;">
+                        <b>Niyet Analizi:</b> {satir["Zihinsel_Niyet_Analizi"]}
+                    </div>
+                    <div style="color: #7d8590; font-size: 0.82rem; margin-top: 6px;">
+                        <b>Gerekçe:</b> {satir["Skor_Degerlendirme_Gerekcesi"]}
+                    </div>
+                </div>
+                """,
+          unsafe_allow_html=True,
+      )
