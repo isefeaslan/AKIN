@@ -6,7 +6,7 @@ import pydeck as pdk
 import streamlit as st
 
 st.set_page_config(
-    page_title="SoS Güvenlik Beyni - Pre-Crime & Mobil",
+    page_title="AKIN — Anomali, Konum, İzleme ve Niyet",
     page_icon="🚨",
     layout="wide",
 )
@@ -14,10 +14,64 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .stMetric {background-color: #1e2530; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
-    .stTabs [data-baseweb="tab-list"] {gap: 4px; font-size: 13px; overflow-x: auto;}
-    .stTabs [data-baseweb="tab"] {padding: 6px 10px; white-space: nowrap;}
-    .block-container {padding-top: 1rem; padding-bottom: 1rem; padding-left: 0.9rem; padding-right: 0.9rem; max-width: 100%;}
+    .stMetric {
+        background-color: #161b24;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 12px 14px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px;
+        font-size: 13.5px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 8px 14px;
+        border-radius: 8px 8px 0 0;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+    .akin-banner {
+        background: linear-gradient(90deg, rgba(255, 75, 75, 0.14), rgba(22, 27, 36, 0.94));
+        border: 1px solid rgba(255, 75, 75, 0.30);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+    }
+    .akin-pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, 0.08);
+        margin-right: 6px;
+        margin-top: 6px;
+    }
+    .akin-card {
+        background-color: #161b24;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+    }
+    .risk-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.80rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1.4rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 100%;
+    }
     @media (max-width: 768px) {
         .row-widget.stHorizontal {flex-direction: column;}
     }
@@ -27,24 +81,45 @@ st.markdown(
 )
 
 tr_saat_dilimi = ZoneInfo("Europe/Istanbul")
-simdiki_zaman = datetime.now(tr_saat_dilimi)
-tarih_str = simdiki_zaman.strftime("%d.%m.%Y")
-saat_str = simdiki_zaman.strftime("%H:%M:%S")
+
+
+def anlik_tr_zaman():
+  simdi = datetime.now(tr_saat_dilimi)
+  return simdi.strftime("%H:%M:%S"), simdi.strftime("%d.%m.%Y")
+
+
+def risk_rozet_stili(risk_seviyesi: str) -> str:
+  if "Siyah" in risk_seviyesi:
+    return (
+        "background-color: #0d1117; color: #ff6b6b; border: 1px solid #ff4b4b;"
+    )
+  if "Kırmızı" in risk_seviyesi:
+    return (
+        "background-color: rgba(255, 75, 75, 0.18); color: #ff7b7b; border: 1px"
+        " solid rgba(255, 75, 75, 0.45);"
+    )
+  if "Turuncu" in risk_seviyesi:
+    return (
+        "background-color: rgba(255, 165, 0, 0.18); color: #ffb84d; border: 1px"
+        " solid rgba(255, 165, 0, 0.45);"
+    )
+  return (
+      "background-color: rgba(255, 215, 0, 0.15); color: #ffe066; border: 1px"
+      " solid rgba(255, 215, 0, 0.40);"
+  )
 
 
 @st.fragment(run_every=1)
 def canli_saat_kutusu(hizalama: str = "flex-start"):
-  guncel = datetime.now(tr_saat_dilimi)
-  guncel_saat = guncel.strftime("%H:%M:%S")
-  guncel_tarih = guncel.strftime("%d.%m.%Y")
+  guncel_saat, guncel_tarih = anlik_tr_zaman()
   st.markdown(
       f"""
         <div style="display: flex; justify-content: {hizalama};">
             <div style="
                 padding: 8px 14px;
                 border-radius: 8px;
-                border: 1px solid rgba(255, 75, 75, 0.35);
-                background-color: rgba(30, 37, 48, 0.75);
+                border: 1px solid rgba(255, 75, 75, 0.40);
+                background-color: rgba(22, 27, 36, 0.92);
                 display: inline-flex;
                 align-items: center;
                 gap: 10px;
@@ -1443,7 +1518,8 @@ def veriyi_yukle(n: int = 150000):
 
 df = veriyi_yukle()
 
-st.sidebar.title("🚨 Sistem Kontrol Merkezi")
+# --- Kenar Çubuğu: Sistem Kontrol Merkezi ---
+st.sidebar.title("🚨 AKIN Kontrol Merkezi")
 with st.sidebar:
   canli_saat_kutusu("flex-start")
 st.sidebar.markdown("---")
@@ -1513,9 +1589,24 @@ if secilen_mahalleler:
 
 süzülmüş_df = df[mask]
 
-col_baslik, col_zaman = st.columns([3, 1])
+# --- Üst Durum Şeridi & Canlı Saat ---
+col_baslik, col_zaman = st.columns([3.5, 1.2])
 with col_baslik:
-  st.title("🚨 T.C. Güvenlik Beyni - Pre-Crime & Niyet Analitiği")
+  bolge_etiketi = ", ".join(secilen_iller) if secilen_iller else "Tüm Türkiye"
+  st.markdown(
+      f"""
+        <div class="akin-banner">
+            <div style="font-size: 1.35rem; font-weight: 700;">🚨 AKIN — Anomali, Konum, İzleme ve Niyet</div>
+            <div style="opacity: 0.82; font-size: 0.88rem; margin-top: 2px;">Operasyonel Risk ve Önleyici Niyet Analitiği Paneli</div>
+            <div>
+                <span class="akin-pill">📍 Kapsam: {bolge_etiketi}</span>
+                <span class="akin-pill">🎯 Min. Risk Eşiği: {risk_esigi:.1f}</span>
+                <span class="akin-pill">👥 Eşleşen Kayıt: {len(süzülmüş_df):,}</span>
+            </div>
+        </div>
+        """,
+      unsafe_allow_html=True,
+  )
 with col_zaman:
   canli_saat_kutusu("flex-end")
 
@@ -1526,86 +1617,140 @@ tab1, tab2, tab3 = st.tabs([
 ])
 
 with tab1:
-  m1, m2, m3 = st.columns(3)
+  # 1. Özet Metrik Kartları
+  m1, m2, m3, m4 = st.columns(4)
   m1.metric("Toplam İzlenen Profil", f"{len(df):,}")
   m2.metric("Filtrelenen Şüpheli Sayısı", f"{len(süzülmüş_df):,}")
   m3.metric(
-      "Kritik Alarm Sayısı (Siyah/Kırmızı)",
+      "Kritik Alarm (Siyah / Kırmızı)",
       f"{(süzülmüş_df['Hesaplanan_Anomali_Skoru'] >= 7.0).sum():,}",
   )
+  ort_skor = (
+      süzülmüş_df["Hesaplanan_Anomali_Skoru"].mean()
+      if not süzülmüş_df.empty
+      else 0.0
+  )
+  m4.metric("Ortalama Anomali Skoru", f"{ort_skor:.2f} / 10.0")
 
   st.markdown("---")
-  col_harita, col_alarm = st.columns([2, 1])
 
-  with col_harita:
-    st.subheader("🗺️ Türkiye Sınırları Anomali Yoğunluğu")
-    harita_df = (
-        süzülmüş_df.sort_values(
-            by="Hesaplanan_Anomali_Skoru", ascending=False
-        )
-        .head(2000)
-        .copy()
-    )
+  # 2. Öncelikli Tam Genişlik Harita Bloğu
+  st.subheader("🗺️ Türkiye Sınırları Anomali Yoğunluğu (Öncelikli Harita Görünümü)")
+  harita_df = (
+      süzülmüş_df.sort_values(
+          by="Hesaplanan_Anomali_Skoru", ascending=False
+      )
+      .head(2000)
+      .copy()
+  )
 
-    harita_df["color_r"] = np.where(
-        harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 255
-    )
-    harita_df["color_g"] = np.where(
-        harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 0
-    )
-    harita_df["color_b"] = 30
+  harita_df["color_r"] = np.where(
+      harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 255
+  )
+  harita_df["color_g"] = np.where(
+      harita_df["Hesaplanan_Anomali_Skoru"] >= 8.5, 30, 0
+  )
+  harita_df["color_b"] = 30
 
-    layer = pdk.Layer(
-        "ScatterplotLayer",
-        harita_df,
-        get_position=["lon", "lat"],
-        get_color=["color_r", "color_g", "color_b", 200],
-        get_radius="Hesaplanan_Anomali_Skoru * 800",
-        pickable=True,
-        radius_scale=6,
-        radius_min_pixels=4,
-        radius_max_pixels=20,
-    )
+  if secilen_iller and secilen_iller[-1] in IL_KOORDINATLARI:
+    odak_lat, odak_lon = IL_KOORDINATLARI[secilen_iller[-1]]
+    odak_zoom = 8.2
+  else:
+    odak_lat, odak_lon = 39.0, 35.2
+    odak_zoom = 5.6
 
-    view_state = pdk.ViewState(
-        latitude=39.0,
-        longitude=35.2,
-        zoom=5.6,
-        min_zoom=5.2,
-        max_zoom=12.0,
-        pitch=15,
-    )
-    r = pdk.Deck(
-        map_style=None,
-        layers=[layer],
-        initial_view_state=view_state,
-        tooltip={
-            "html": (
-                "<b>Şüpheli:</b> {Ad_Soyad}<br/><b>Muhtemel Suç:</b>"
-                " {Muhtemel_Suc_Turu}<br/><b>Zaman:</b>"
-                " {Eylem_Zamani_Projeksiyonu}"
-            )
-        },
-    )
-    st.pydeck_chart(r)
+  layer = pdk.Layer(
+      "ScatterplotLayer",
+      harita_df,
+      get_position=["lon", "lat"],
+      get_color=["color_r", "color_g", "color_b", 200],
+      get_radius="Hesaplanan_Anomali_Skoru * 800",
+      pickable=True,
+      radius_scale=6,
+      radius_min_pixels=4,
+      radius_max_pixels=20,
+  )
 
-  with col_alarm:
-    st.subheader("🔔 Anlık Tehdit Akışı & TR Zaman Damgası")
-    en_riskli = süzülmüş_df.sort_values(
-        by="Hesaplanan_Anomali_Skoru", ascending=False
-    ).head(5)
-    for idx, row in en_riskli.iterrows():
-      with st.expander(f"{row['Risk_Seviyesi']} - {row['Ad_Soyad']}"):
-        st.write(f"**Hedef Suç:** {row['Muhtemel_Suc_Turu']}")
-        st.write(f"**Zaman Projeksiyonu:** {row['Eylem_Zamani_Projeksiyonu']}")
-        st.write(f"**Tespit Zamanı (TR):** {saat_str} ({tarih_str})")
-        if st.button(
-            "🚨 Önleyici Müdahale Başlat", key=f"btn_sevk_{row['TC_No']}_{idx}"
-        ):
-          st.success(
-              f"[{saat_str} TR] {row['Ad_Soyad']} için önleyici saha"
-              " operasyonu tetiklendi!"
+  view_state = pdk.ViewState(
+      latitude=odak_lat,
+      longitude=odak_lon,
+      zoom=odak_zoom,
+      min_zoom=5.2,
+      max_zoom=12.0,
+      pitch=15,
+  )
+  r = pdk.Deck(
+      map_style=None,
+      layers=[layer],
+      initial_view_state=view_state,
+      tooltip={
+          "html": (
+              "<b>Şüpheli:</b> {Ad_Soyad}<br/><b>Bölge:</b> {Ikamet_Ili} /"
+              " {Ikamet_Ilcesi}<br/><b>Muhtemel Suç:</b>"
+              " {Muhtemel_Suc_Turu}<br/><b>Zaman:</b>"
+              " {Eylem_Zamani_Projeksiyonu}"
           )
+      },
+  )
+  st.pydeck_chart(r, use_container_width=True)
+
+  st.markdown("---")
+
+  # 3. Harita Altı Tam Genişlik Satır 1: Anlık Tehdit Akışı Kartları
+  st.subheader("🔔 Anlık Tehdit Akışı & TR Zaman Damgası")
+  en_riskli = süzülmüş_df.sort_values(
+      by="Hesaplanan_Anomali_Skoru", ascending=False
+  ).head(5)
+
+  if en_riskli.empty:
+    st.info("Seçili filtre kriterlerine uyan yüksek riskli kayıt bulunamadı.")
+  else:
+    for idx, row in en_riskli.iterrows():
+      tespit_saat, tespit_tarih = anlik_tr_zaman()
+      rozet_css = risk_rozet_stili(str(row["Risk_Seviyesi"]))
+      st.markdown(
+          f"""
+                <div class="akin-card">
+                    <span class="risk-badge" style="{rozet_css}">{row['Risk_Seviyesi']} • Skor: {row['Hesaplanan_Anomali_Skoru']:.1f}</span>
+                    <div style="font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">{row['Ad_Soyad']} <span style="opacity: 0.7; font-size: 0.85rem;">(TC: {row['TC_No']} • {row['Ikamet_Ili']} / {row['Ikamet_Ilcesi']})</span></div>
+                    <div style="font-size: 0.90rem; margin-bottom: 2px;">🎯 <b>Muhtemel Suç:</b> {row['Muhtemel_Suc_Turu']} &nbsp;|&nbsp; ⏰ <b>Zaman Projeksiyonu:</b> {row['Eylem_Zamani_Projeksiyonu']}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.82;">💡 <b>Niyet Özeti:</b> {row['Zihinsel_Niyet_Analizi']} • 🕒 <b>Tespit (TR):</b> {tespit_saat} ({tespit_tarih})</div>
+                </div>
+                """,
+          unsafe_allow_html=True,
+      )
+      if st.button(
+          f"🚨 Önleyici Müdahale Başlat — {row['Ad_Soyad']}",
+          key=f"btn_sevk_{row['TC_No']}_{idx}",
+      ):
+        komut_saat, _ = anlik_tr_zaman()
+        st.success(
+            f"[{komut_saat} TR] {row['Ad_Soyad']} ({row['Ikamet_Ili']}) için"
+            " önleyici saha operasyonu tetiklendi!"
+        )
+
+  st.markdown("---")
+
+  # 4. Harita Altı Tam Genişlik Satır 2: Seçili Kapsam Risk & Suç Özeti
+  st.subheader("📊 Seçili Kapsam Risk Seviyesi & Suç Eğilimi Özeti")
+  if not süzülmüş_df.empty:
+    ozet_c1, ozet_c2 = st.columns(2)
+    with ozet_c1:
+      risk_dagilim = (
+          süzülmüş_df["Risk_Seviyesi"]
+          .value_counts()
+          .reset_index()
+      )
+      risk_dagilim.columns = ["Risk Sınıfı", "Kişi Sayısı"]
+      st.dataframe(risk_dagilim, use_container_width=True, hide_index=True)
+    with ozet_c2:
+      suc_dagilim = (
+          süzülmüş_df["Muhtemel_Suc_Turu"]
+          .value_counts()
+          .reset_index()
+      )
+      suc_dagilim.columns = ["Öngörülen Suç Türü", "Kayıt Sayısı"]
+      st.dataframe(suc_dagilim, use_container_width=True, hide_index=True)
 
 with tab2:
   st.subheader("🎯 Pre-Crime & Suç Eğilimi Matrisi")
@@ -1651,8 +1796,18 @@ with tab3:
     ]
     if not bulunan.empty:
       kisi = bulunan.iloc[0]
-      st.success(
-          f"Kayıt Bulundu: **{kisi['Ad_Soyad']}** (TC: {kisi['TC_No']})"
+      sorgu_saat, sorgu_tarih = anlik_tr_zaman()
+      rozet_css = risk_rozet_stili(str(kisi["Risk_Seviyesi"]))
+
+      st.markdown(
+          f"""
+                <div class="akin-card">
+                    <span class="risk-badge" style="{rozet_css}">{kisi['Risk_Seviyesi']}</span>
+                    <div style="font-size: 1.2rem; font-weight: 700;">{kisi['Ad_Soyad']}</div>
+                    <div style="opacity: 0.8; font-size: 0.9rem;">TC Kimlik No: {kisi['TC_No']} • {kisi['Vatandaslik_Durumu']} • Sorgu Zamanı (TR): {sorgu_saat} ({sorgu_tarih})</div>
+                </div>
+                """,
+          unsafe_allow_html=True,
       )
 
       p1, p2, p3, p4 = st.columns(4)
@@ -1663,7 +1818,7 @@ with tab3:
       p3.metric(
           "Güncel İl / İlçe", f"{kisi['Ikamet_Ili']} / {kisi['Ikamet_Ilcesi']}"
       )
-      p4.metric("Sorgu Zamanı (TR)", saat_str)
+      p4.metric("Sorgu Zamanı (TR)", sorgu_saat)
 
       st.markdown("---")
       st.markdown("##### 🧠 Yapay Zeka Pre-Crime & Niyet Analizi")
